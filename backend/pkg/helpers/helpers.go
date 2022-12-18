@@ -12,6 +12,7 @@ const ContextAuthorIpKey = "authorIP"
 type config struct {
 	ShortLinkBase string `json:"shortLinkBase"`
 	DbConnString  string `json:"dbConnString"`
+	CorsAllowFrom string `json:"corsAllowFrom"`
 }
 
 type Input struct {
@@ -35,11 +36,21 @@ func GetConfig() config {
 		} else {
 			configInstance.ShortLinkBase = shortLinkBase
 		}
+	}
+	if configInstance.DbConnString == "" {
 		postgresConnString := os.Getenv("POSTGRES_CONN_STRING")
 		if postgresConnString == "" {
-			configInstance.DbConnString = "postgres://postgres:1@localhost:55000/postgres?sslmode=disable"
+			configInstance.DbConnString = "postgres://user:password@localhost:5432/linkShortener"
 		} else {
 			configInstance.DbConnString = postgresConnString
+		}
+	}
+	if configInstance.CorsAllowFrom == "" {
+		corsAllowString := os.Getenv("ALLOW_CORS_FROM")
+		if corsAllowString == "" {
+			configInstance.CorsAllowFrom = "localhost:3000"
+		} else {
+			configInstance.CorsAllowFrom = corsAllowString
 		}
 	}
 	return configInstance

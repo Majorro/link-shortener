@@ -6,14 +6,19 @@ import (
 	"strings"
 	"time"
 
-	"snaLinkShortener/internal/memory"
-	"snaLinkShortener/pkg/helpers"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
+	"snaLinkShortener/internal/memory"
+	"snaLinkShortener/pkg/helpers"
 )
 
 var Memory memory.Memory
+
+func enableCors(w *http.ResponseWriter) {
+	if corsString := helpers.GetConfig().CorsAllowFrom; corsString != "" {
+		(*w).Header().Set("Access-Control-Allow-Origin", corsString)
+	}
+}
 
 func sendSuccess(w http.ResponseWriter, logger *logrus.Entry, output []byte) {
 	_, errSending := w.Write(output)
@@ -31,6 +36,7 @@ func sendError(w http.ResponseWriter, logger *logrus.Entry, output []byte, code 
 }
 
 func ManageLongLink(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	db := Memory
 	logger := r.Context().Value(helpers.ContextLoggerKey).(*logrus.Entry)
