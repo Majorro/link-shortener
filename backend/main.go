@@ -19,7 +19,6 @@ import (
 )
 
 func main() {
-	time.Sleep(30 * time.Second)
 	logger := logrus.New()
 	if len(os.Args) < 2 || os.Args[1] == "--use-memory" {
 		handlers.Memory = memory.Memory{
