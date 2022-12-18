@@ -4,6 +4,8 @@ ENV SHORT_LINK_BASE=http://localhost:15001/
 
 ENV POSTGRES_CONN_STRING=postgres://postgres:1@host.docker.internal:55000/postgres?sslmode=disable
 
+ENV ALLOW_CORS_FROM=
+
 RUN GOROOT=/go
 
 WORKDIR /go/src/snaLinks
