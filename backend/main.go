@@ -27,7 +27,7 @@ func main() {
 		logger.Info("Using in-memory storage")
 	} else if os.Args[1] == "--use-db" {
 		handlers.Memory = memory.Memory{
-			Storage: db.GetMemoryInstance(),
+			Storage: db.GetMemoryInstance(logger),
 		}
 		logger.Info("Using db storage")
 	} else {
