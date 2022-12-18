@@ -56,4 +56,5 @@ jobs:
         run: docker run link-shortener-backend sh -c "go test"
 
       - name: stop containers
+        if: success() || failure()
         run: docker compose down
