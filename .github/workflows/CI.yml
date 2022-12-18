@@ -53,7 +53,7 @@ jobs:
 
       - name: unit test backend
         if: success() || failure()
-        run: docker run link-shortener-backend sh -c "go test"
+        run: docker run link-shortener-backend sh -c "go test --use-memory"
 
       - name: stop containers
         if: success() || failure()
