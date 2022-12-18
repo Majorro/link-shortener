@@ -1,9 +1,10 @@
 version: "3.9"
 services:
   db:
+    container_name: link-shortener-db
     image: postgres:latest
     environment:
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
     ports:
       - 5432:5432
     restart: always
@@ -11,39 +12,27 @@ services:
       - database-data:/var/lib/postgresql/data/
 
   backend:
+    container_name: link-shortener-backend
     build: backend
     ports:
       - 15001:15001
     depends_on:
       - db
     environment:
-      - SHORT_LINK_BASE=http://localhost:15001/
-      - POSTGRES_CONN_STRING=postgres://postgres:postgres@db:5432/postgres?sslmode=disable
-      - ALLOW_CORS_FROM=http://localhost:8080/
+      - SHORT_LINK_BASE=$SHORT_LINK_BASE
+      - POSTGRES_CONN_STRING=$POSTGRES_CONN_STRING
+      - ALLOW_CORS_FROM=$ALLOW_CORS_FROM
     command: --use-db
 
   frontend:
+    container_name: link-shortener-frontend
     build: frontend
     ports:
       - 8080:80
     depends_on:
       - backend
     environment:
-      - REACT_APP_API_BASE_URL=http://localhost:15001/
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=postgres@postgres.org
-      - PGADMIN_DEFAULT_PASSWORD=postgres
-    ports:
-      - "5050:80"
-    depends_on:
-      - db
-    restart: always
-    volumes:
-      - pgadmin:/root/.pgadmin
+      - REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
 
 volumes:
   database-data:
-  pgadmin:

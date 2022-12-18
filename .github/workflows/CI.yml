@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+
+env:
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  SHORT_LINK_BASE: ${{ secrets.SHORT_LINK_BASE }}
+  POSTGRES_CONN_STRING: ${{ secrets.POSTGRES_CONN_STRING }}
+  ALLOW_CORS_FROM: ${{ secrets.ALLOW_CORS_FROM }}
+  REACT_APP_API_BASE_URL: ${{ secrets.SHORT_LINK_BASE }}
+
+jobs:
+  compose-test:
+    name: compose smoke test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      
+      - name: build and start containers
+        continue-on-error: true
+        run:
+          - export POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          - export SHORT_LINK_BASE=$SHORT_LINK_BASE
+          - export POSTGRES_CONN_STRING=$POSTGRES_CONN_STRING
+          - export ALLOW_CORS_FROM=$ALLOW_CORS_FROM
+          - export REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
+          - docker compose up -d --build
+
+      - name: sleep
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '15s'
+
+      - name: curl api
+        continue-on-error: true
+        run: curl http://localhost:15001/
+
+      - name: curl web
+        continue-on-error: true
+        run: curl http://localhost:8080/
+
+      - name: unit test backend
+        continue-on-error: true
+        run: docker run link-shortener-backend sh -c "go test"
