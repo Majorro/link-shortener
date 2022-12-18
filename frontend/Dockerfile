@@ -7,8 +7,6 @@ COPY . .
 
 RUN npm ci
 RUN npm run build
-RUN ls
-
 
 FROM nginx:alpine AS prod
 
