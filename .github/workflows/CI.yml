@@ -33,26 +33,26 @@ jobs:
         run: docker compose build
 
       - name: start containers
-        run: docker compose up
+        run: docker compose up -d
 
       - name: sleep
         uses: jakejarvis/wait-action@master
         with:
-          time: '15s'
+          time: '10s'
 
       - name: check containers
         run: docker ps -a
 
       - name: curl api
-        if: always()
+        if: success() || failure()
         run: curl -S -s --retry 10 --retry-connrefused $SHORT_LINK_BASE
 
       - name: curl web
-        if: always()
+        if: success() || failure()
         run: curl -S -s --retry 10 --retry-connrefused $ALLOW_CORS_FROM
 
       - name: unit test backend
-        if: always()
+        if: success() || failure()
         run: docker run link-shortener-backend sh -c "go test"
 
       - name: stop containers
