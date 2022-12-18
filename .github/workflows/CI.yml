@@ -44,15 +44,15 @@ jobs:
         run: docker ps -a
 
       - name: curl api
-        if: always
+        if: always()
         run: curl -S -s --retry 10 --retry-connrefused $SHORT_LINK_BASE
 
       - name: curl web
-        if: always
+        if: always()
         run: curl -S -s --retry 10 --retry-connrefused $ALLOW_CORS_FROM
 
       - name: unit test backend
-        if: always
+        if: always()
         run: docker run link-shortener-backend sh -c "go test"
 
       - name: stop containers
