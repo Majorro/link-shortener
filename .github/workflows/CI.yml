@@ -23,13 +23,13 @@ jobs:
       
       - name: build and start containers
         continue-on-error: true
-        run:
-          - export POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-          - export SHORT_LINK_BASE=$SHORT_LINK_BASE
-          - export POSTGRES_CONN_STRING=$POSTGRES_CONN_STRING
-          - export ALLOW_CORS_FROM=$ALLOW_CORS_FROM
-          - export REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
-          - docker compose up -d --build
+        run: |
+          export POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          export SHORT_LINK_BASE=$SHORT_LINK_BASE
+          export POSTGRES_CONN_STRING=$POSTGRES_CONN_STRING
+          export ALLOW_CORS_FROM=$ALLOW_CORS_FROM
+          export REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
+          docker compose up -d --build
 
       - name: sleep
         uses: jakejarvis/wait-action@master
