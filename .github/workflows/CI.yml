@@ -60,7 +60,7 @@ jobs:
 
       - name: curl api
         if: success() || failure()
-        run: curl -S -s --retry 3 --retry-connrefused --header "Content-Type:: application/json" --request POST --data '{"link":"https://www.google.com/"}' $SHORT_LINK_BASE
+        run: "curl -S -s --retry 3 --retry-connrefused --header \"Content-Type: application/json\" --request POST --data '{\"link\":\"https://www.google.com/\"}' $SHORT_LINK_BASE"
 
       - name: curl web
         if: success() || failure()
