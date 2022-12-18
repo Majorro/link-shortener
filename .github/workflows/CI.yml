@@ -51,10 +51,6 @@ jobs:
         if: success() || failure()
         run: curl -S -s --retry 3 --retry-connrefused $ALLOW_CORS_FROM
 
-      - name: unit test backend
-        if: success() || failure()
-        run: docker run link-shortener-backend sh -c "go test --use-memory"
-
       - name: stop containers
         if: success() || failure()
         run: docker compose down
