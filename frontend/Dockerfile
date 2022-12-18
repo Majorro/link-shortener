@@ -1,7 +1,5 @@
 FROM node:latest AS build
 
-ENV REACT_APP_API_BASE_URL="http://localhost:15001/"
-
 WORKDIR /app
 COPY . .
 
