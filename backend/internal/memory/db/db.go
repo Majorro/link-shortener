@@ -82,7 +82,7 @@ func SetAdapter(adapter databaseAdapter) {
 
 const (
 	retryTimes = 10
-	timeout    = 1 * time.Second
+	timeout    = 2 * time.Second
 )
 
 func GetMemoryInstance(logger *logrus.Logger) database {
