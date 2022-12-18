@@ -45,11 +45,11 @@ jobs:
 
       - name: curl api
         if: success() || failure()
-        run: curl -S -s --retry 10 --retry-connrefused $SHORT_LINK_BASE
+        run: curl -S -s --retry 3 --retry-connrefused $SHORT_LINK_BASE
 
       - name: curl web
         if: success() || failure()
-        run: curl -S -s --retry 10 --retry-connrefused $ALLOW_CORS_FROM
+        run: curl -S -s --retry 3 --retry-connrefused $ALLOW_CORS_FROM
 
       - name: unit test backend
         if: success() || failure()
