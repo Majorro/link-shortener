@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+
+env:
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  SHORT_LINK_BASE: ${{ secrets.SHORT_LINK_BASE }}
+  POSTGRES_CONN_STRING: ${{ secrets.POSTGRES_CONN_STRING }}
+  ALLOW_CORS_FROM: ${{ secrets.ALLOW_CORS_FROM }}
+  REACT_APP_API_BASE_URL: ${{ secrets.SHORT_LINK_BASE }}
+
+jobs:
+  backend-unit-test:
+    name: backend unit test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: run tests
+        run: |
+          cd backend
+          go test -v ./...
+
+  compose-test:
+    name: compose test
+    runs-on: ubuntu-latest
+    needs: backend-unit-test
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      
+      - name: export env vars
+        run: |
+          export POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          export SHORT_LINK_BASE=$SHORT_LINK_BASE
+          export POSTGRES_CONN_STRING=$POSTGRES_CONN_STRING
+          export ALLOW_CORS_FROM=$ALLOW_CORS_FROM
+          export REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
+
+      - name: build containers
+        run: docker compose build
+
+      - name: start containers
+        run: docker compose up -d
+
+      - name: sleep
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '10s'
+
+      - name: check containers
+        run: docker ps -a
+
+      - name: curl api
+        if: success() || failure()
+        run: "curl -S -s --retry 3 --retry-connrefused --header \"Content-Type: application/json\" --request POST --data '{\"link\":\"https://www.google.com/\"}' $SHORT_LINK_BASE"
+
+      - name: curl web
+        if: success() || failure()
+        run: curl -S -s --retry 3 --retry-connrefused $ALLOW_CORS_FROM
+
+      - name: stop containers
+        if: success() || failure()
+        run: docker compose down

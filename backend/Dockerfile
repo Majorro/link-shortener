@@ -7,6 +7,7 @@ ADD . .
 RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux go build -a -o snaLinks .
 
+
 EXPOSE 15001
 RUN chmod 777 /go/src/snaLinks
 ENTRYPOINT [ "/go/src/snaLinks/snaLinks" ]
