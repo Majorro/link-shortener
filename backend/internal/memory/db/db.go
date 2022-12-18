@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/sirupsen/logrus"
 	"snaLinkShortener/internal/memory"
 	"snaLinkShortener/pkg/helpers"
 
@@ -78,27 +80,45 @@ func SetAdapter(adapter databaseAdapter) {
 	}
 }
 
-func GetMemoryInstance() database {
-	if dbSingleInstance.adapter == nil {
-		fmt.Println(helpers.GetConfig().DbConnString)
-		db, err := sql.Open("postgres", helpers.GetConfig().DbConnString)
-		if err != nil {
-			panic("Database open error: " + err.Error())
-		}
-		adapter := databaseSender{
-			source: db,
-		}
-		err = adapter.source.Ping()
-		if err != nil {
-			panic("Database ping error: " + err.Error())
-		}
+const (
+	retryTimes = 10
+	timeout    = 1 * time.Second
+)
 
-		_, err = adapter.CreateDb()
-		if err != nil {
-			panic("Database creating table links error: " + err.Error())
+func GetMemoryInstance(logger *logrus.Logger) database {
+	if dbSingleInstance.adapter == nil {
+		var errCycle error
+		for i := 0; i < retryTimes; i++ {
+			errCycle = func() error {
+				db, err := sql.Open("postgres", helpers.GetConfig().DbConnString)
+				if err != nil {
+					return fmt.Errorf("Database open error: " + err.Error())
+				}
+				adapter := databaseSender{
+					source: db,
+				}
+				err = adapter.source.Ping()
+				if err != nil {
+					return fmt.Errorf("Database ping error: " + err.Error())
+				}
+
+				_, err = adapter.CreateDb()
+				if err != nil {
+					return fmt.Errorf("Database creating table links error: " + err.Error())
+				}
+				dbSingleInstance = database{
+					adapter: adapter,
+				}
+				return nil
+			}()
+			if errCycle == nil {
+				break
+			}
+			logger.Errorf("can not connect to db: %s. Try again", errCycle.Error())
+			time.Sleep(timeout)
 		}
-		dbSingleInstance = database{
-			adapter: adapter,
+		if errCycle != nil {
+			panic(errCycle)
 		}
 	}
 	return dbSingleInstance
