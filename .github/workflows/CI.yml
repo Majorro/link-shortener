@@ -21,11 +21,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: move to backend dir
-        run: cd backend
-
       - name: run tests
-        run: go test -v ./...
+        run: |
+          cd backend
+          go test -v ./...
 
   compose-test:
     name: compose test
