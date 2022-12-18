@@ -48,7 +48,7 @@ func GetConfig() config {
 	if configInstance.CorsAllowFrom == "" {
 		corsAllowString := os.Getenv("ALLOW_CORS_FROM")
 		if corsAllowString == "" {
-			configInstance.CorsAllowFrom = "localhost:3000"
+			configInstance.CorsAllowFrom = "http://localhost:3000"
 		} else {
 			configInstance.CorsAllowFrom = corsAllowString
 		}

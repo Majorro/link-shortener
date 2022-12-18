@@ -54,7 +54,7 @@ func TestDb(t *testing.T) {
 	mock := MockStorage{}
 	db.SetAdapter(mock)
 
-	dbs := db.GetMemoryInstance()
+	dbs := db.GetMemoryInstance(nil)
 	entry1 := memory.MemoryEntry{
 		ShortId:   "aaabbbcccd",
 		LongLink:  "https://google.com",
