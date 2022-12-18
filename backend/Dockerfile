@@ -4,7 +4,6 @@ RUN GOROOT=/go
 
 WORKDIR /go/src/snaLinks
 ADD . .
-RUN go test ./...
 RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux go build -a -o snaLinks .
 
