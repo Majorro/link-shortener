@@ -13,7 +13,7 @@ env:
   REACT_APP_API_BASE_URL: ${{ secrets.SHORT_LINK_BASE }}
 
 jobs:
-  backend-unit-test
+  backend-unit-test:
     name: backend unit test
     runs-on: ubuntu-latest
 
